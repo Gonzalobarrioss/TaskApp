@@ -40,11 +40,12 @@ export const deleteTask = async (req , res) => {
     res.sendStatus(204)
 }
 export const updateTask = async (req , res) => {
+   // console.log(req.body, req.params.id)
     const connection = await connect();
-    results = await connection.query("UPDATE tasks SET ? WHERE id = ?",[
+    await connection.query("UPDATE tasks SET ? WHERE id = ?",[
         req.body,
         req.params.id,
     ])
-    res.sendStatus(204)
+    res.sendStatus(204) 
 
 }

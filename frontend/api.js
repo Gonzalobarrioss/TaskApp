@@ -1,4 +1,4 @@
-const API = "http://192.168.1.122:3000/tasks"
+const API = "http://192.168.1.100:3000/tasks"
 
 export const getRutasLecturista = async () => {
     const res = await fetch(API);
@@ -6,7 +6,7 @@ export const getRutasLecturista = async () => {
 }
 
 export const getTask = async (id) => {
-    const res = await fetch(`${API}/${id}`)
+    const res = await fetch(`${API}/${id}`);
     return await res.json();
 }
 
@@ -28,11 +28,13 @@ export const deleteTask = async (id) => {
 }
 
 export const updateTask = async (id, newTask) => {
-    await fetch(`${API}/${id}`, {
+    //console.log(id, newTask)
+    const res = await fetch(`${API}/${id}`, {
         method: "PUT",
         headers: {
             Accept: 'application/json', 'Content-Type':'application/json'
         },
-        body: JSON.stringify(id, newTask)
+        body: JSON.stringify(newTask),
     })
+    return res 
 }

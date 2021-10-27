@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { FlatList, RefreshControl } from 'react-native'
+import { useIsFocused } from '@react-navigation/native'
+
 import { getRutasLecturista, deleteTask } from '../api'
 import TaskItem from './TaskItem'
+
 
 
 const TaskList = () => {
 
     const [tasks, setTasks] = useState([])
     const [refreshing, setRefreshing] = useState(false)
+
+    const focus = useIsFocused()
 
     const loadTasks = async () => {
         const data = await getRutasLecturista();
@@ -16,7 +21,7 @@ const TaskList = () => {
 
     useEffect(() => {
         loadTasks();
-    }, [])
+    }, [focus])
 
 
     const renderItem = ({item}) => {
@@ -31,7 +36,7 @@ const TaskList = () => {
         setRefreshing(false)
     })
 
-    const handleDelete = async (id) => {
+    const handleDelete =  (id) => {
         
         deleteTask(id);
         loadTasks();

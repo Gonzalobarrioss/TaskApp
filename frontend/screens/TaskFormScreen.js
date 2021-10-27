@@ -21,11 +21,12 @@ const TaskFormScreen = ({navigation, route}) => {
                 await saveTask(task)
             }
             else {
+                //console.log(route.params.id, task)
                 await updateTask(route.params.id, task)
             }
             navigation.navigate("HomeScreen")
         } catch (error) {
-            console.log(error)
+            console.log("error", error)
         }  
     }
 
@@ -65,7 +66,7 @@ const TaskFormScreen = ({navigation, route}) => {
                         <Text style= {styles.buttonText}>Save Task</Text>
                     </TouchableOpacity>
                 ) : (
-                    <TouchableOpacity style = {styles.buttonSave} onPress={handleSubmit}>
+                    <TouchableOpacity style = {styles.buttonUpdate} onPress={handleSubmit}>
                         <Text style= {styles.buttonText}>Update Task</Text>
                     </TouchableOpacity>
                 )
@@ -99,6 +100,14 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "#ffffff",
         textAlign: "center"
+    },
+    buttonUpdate: {
+        paddingTop: 10,
+        paddingBottom: 10,
+        borderRadius: 5,
+        marginBottom: 3,
+        backgroundColor: "#e58e26",
+        width: "90%"
     }
 })
 
