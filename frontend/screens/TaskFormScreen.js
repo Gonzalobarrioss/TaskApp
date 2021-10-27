@@ -1,11 +1,13 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
 //import { TouchableOpacity } from 'react-native-gesture-handler'
 import Layout from '../components/Layout'
-import { saveTask } from '../api'
+import { saveTask, getTask, updateTask } from '../api'
 
-const TaskFormScreen = ({navigation}) => {
+const TaskFormScreen = ({navigation, route}) => {
 
+
+    const [editing, setEditing] = useState(false)
     const [ task, setTask ] =  useState ({
         title: '',
         description: ''
@@ -13,10 +15,32 @@ const TaskFormScreen = ({navigation}) => {
 
     const handleChange = (name, value) => setTask({ ...task, [name]: value})
 
-    const handleSubmit = () => {
-        saveTask(task)
-        navigation.navigate("HomeScreen")
+    const handleSubmit = async () => {
+        try {
+            if (!editing){
+                await saveTask(task)
+            }
+            else {
+                await updateTask(route.params.id, task)
+            }
+            navigation.navigate("HomeScreen")
+        } catch (error) {
+            console.log(error)
+        }  
     }
+
+    useEffect(() => {
+        if(route.params && route.params.id){
+            setEditing(true)
+            navigation.setOptions({
+                headerTitle: 'Updating a Task'
+            });
+            (async () => {
+                const task = await getTask(route.params.id)
+                setTask({title: task.title, description:task.description})
+            })();
+        }
+    }, [])
 
     return (
         <Layout>
@@ -25,16 +49,28 @@ const TaskFormScreen = ({navigation}) => {
                 placeholderTextColor= "#546574"
                 style = {styles.input} 
                 onChangeText = { (text) => handleChange('title', text)}
+                value = { task.title }
             />
             <TextInput 
                 placeholder="Write a description" 
                 placeholderTextColor= "#546574"
                 style = {styles.input} 
                 onChangeText = { (text) => handleChange('description', text) }
+                value = { task.description }
             />
-            <TouchableOpacity style = {styles.buttonSave} onPress={handleSubmit}>
-                <Text style= {styles.buttonText}>Save Task</Text>
-            </TouchableOpacity>
+
+            {
+                !editing ?  (
+                    <TouchableOpacity style = {styles.buttonSave} onPress={handleSubmit}>
+                        <Text style= {styles.buttonText}>Save Task</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity style = {styles.buttonSave} onPress={handleSubmit}>
+                        <Text style= {styles.buttonText}>Update Task</Text>
+                    </TouchableOpacity>
+                )
+            }
+            
         </Layout>
     )
 }
