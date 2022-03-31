@@ -14,8 +14,8 @@ POST {{api}}
 Content-Type: application/json
 
 {
-    "title": "Recibirme",
-    "description": "working hard"
+    "title": "Task 1",
+    "description": "Working Hard"
 }
 
 ###
@@ -26,8 +26,8 @@ PUT {{api}}/1
 Content-Type: application/json
 
 {
-    "title": "Nueva tarea 1",
-    "description": "realizando update"
+    "title": "New Task",
+    "description": "Updating..."
 }
 
 
