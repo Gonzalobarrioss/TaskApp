@@ -14,21 +14,16 @@ const TaskList = () => {
 
     const focus = useIsFocused()
 
-    const loadTasks = async () => {
-        const data = await getTasks();
-        setTasks(data)
-    }
+
 
     useEffect(() => {
+        const loadTasks = async () => {
+            //const data = await getTasks();
+            setTasks(data)
+        }
+
         loadTasks();
     }, [focus])
-
-
-    const renderItem = ({item}) => {
-        return (
-            <TaskItem task={item} handleDelete={handleDelete} />
-        )
-    }
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true)
@@ -37,9 +32,14 @@ const TaskList = () => {
     })
 
     const handleDelete =  (id) => {
-        
         deleteTask(id);
         loadTasks();
+    }
+
+    const renderItem = ({item}) => {
+        return (
+            <TaskItem task={item} handleDelete={handleDelete} />
+        )
     }
 
     return (
