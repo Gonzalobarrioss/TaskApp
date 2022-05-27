@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { FlatList, RefreshControl } from 'react-native'
+import { FlatList, RefreshControl, Text, StyleSheet } from 'react-native'
 import { useIsFocused } from '@react-navigation/native'
 
-import { getTasks, deleteTask } from '../api'
 import TaskItem from './TaskItem'
+import { useSelector } from 'react-redux'
+import { deleteTask } from '../redux/actions/tasksAction'
 
-
-
+import {store} from '../redux/store'
 const TaskList = () => {
 
     const [tasks, setTasks] = useState([])
@@ -14,25 +14,24 @@ const TaskList = () => {
 
     const focus = useIsFocused()
 
+    const tasksList = useSelector( state => state.tasksReducer.tasks)
 
+    const loadTasks = () => {
+        setTasks(tasksList)
+    }
 
     useEffect(() => {
-        const loadTasks = async () => {
-            //const data = await getTasks();
-            setTasks(data)
-        }
-
         loadTasks();
-    }, [focus])
+    }, [tasksList])
 
-    const onRefresh = React.useCallback(async () => {
+    const onRefresh = React.useCallback(() => {
         setRefreshing(true)
-        await loadTasks();
+        loadTasks();
         setRefreshing(false)
     })
 
     const handleDelete =  (id) => {
-        deleteTask(id);
+        store.dispatch(deleteTask(id))
         loadTasks();
     }
 
@@ -43,7 +42,9 @@ const TaskList = () => {
     }
 
     return (
-        
+        <>
+        {
+            tasks.length ? 
             <FlatList
                 style={{width: "100%"}} 
                 data={tasks}
@@ -58,8 +59,24 @@ const TaskList = () => {
                     />
                 }
             />
+            :
+            <Text style={styles.textMessage}>Crea una tarea para empezar</Text>
+        }
+        </>  
         
     )
 }
+
+const styles = StyleSheet.create({
+    textMessage: {
+        color: "#fff",
+        fontSize: 18,
+        letterSpacing: 2,
+        fontWeight: "400",
+        display: 'flex',
+        marginTop: 20
+        
+    }
+})
 
 export default TaskList

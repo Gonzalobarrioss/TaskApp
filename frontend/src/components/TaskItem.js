@@ -1,16 +1,52 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-
+import { setTask } from '../redux/actions/tasksAction'
+import { store } from '../redux/store'
 
 const TaskItem = ({task, handleDelete}) => {
 
     const navigation = useNavigation()
 
+    const handleSetTask = (task) => {
+        store.dispatch(setTask(task))
+        navigation.navigate("TaskFormScreen", { id: task.id })
+    }
+
+    const confirmDelete = () => {
+        Alert.alert(
+            `Atencion`,
+            `Confirme eliminar tarea`,
+            [
+                {
+                    text: "Confirmar",
+                    onPress: () => {
+
+                        try {
+                            handleDelete(task.id)
+                        } catch (error) {
+                            Alert.alert("No se pudo eliminar la tarea")
+                        }
+                        
+                    }
+                },
+                {
+                    text: "Cancelar",
+                    onPress: () => {
+                    },
+                    style: "cancel"
+                }              
+            ],
+            {
+                cancelable: true
+            }
+        )
+    }
+
     return (
         <View style={styles.itemContainer}>
             <TouchableOpacity 
-                onPress= { () => navigation.navigate("TaskFormScreen", { id: task.id })}
+                onPress= { () => handleSetTask(task)}
             >
                 <Text style={styles.itemTitle}>{task.title}</Text>
                 <Text style={styles.itemDescripcion}>{task.description}</Text>
@@ -18,10 +54,10 @@ const TaskItem = ({task, handleDelete}) => {
             
         
             <TouchableOpacity 
-                style={ {backgroundColor: "#ee5253", padding: 7, borderRadius: 5} }
-                onPress= { () => handleDelete(task.id) }    
+                style={ styles.buttonDelete }
+                onPress= { () => confirmDelete() }    
             >
-                <Text style={{ color: "#ffffff"}}>Delete</Text>
+                <Text style={{ color: "#fff"}}>X</Text>
             </TouchableOpacity>
         
         </View>
@@ -38,13 +74,25 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
     },
     itemTitle: {
-        color: "#ffffff"
+        color: "#ffffff",
+        fontSize: 18,
+        fontWeight: "bold",
+        maxWidth: 300
     },
     itemDescripcion: {
-        color: "#ffffff"
+        color: "#ffffff",
+        display: "flex",
+        maxWidth: 300
+    },   
+    buttonDelete: {
+        display: "flex",
+        position: "relative",
+        backgroundColor: "#ee5253", 
+        padding: 10, 
+        borderRadius: 5
     }
 })
 

@@ -33,10 +33,10 @@ export const addNewTask = task => dispatch => {
   });
 };
 
-export const deleteTask = task => dispatch => {
+export const deleteTask = id => dispatch => {
   dispatch({
     type: DELETE_TASK,
-    payload: task
+    payload: id
   });
 };
 

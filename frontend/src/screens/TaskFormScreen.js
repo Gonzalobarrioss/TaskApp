@@ -1,28 +1,39 @@
 import React, {useState, useEffect} from 'react'
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
-//import { TouchableOpacity } from 'react-native-gesture-handler'
+import {  Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
 import Layout from '../components/Layout'
-import { saveTask, getTask, updateTask } from '../api'
+
+import { addNewTask, updateTask } from '../redux/actions/tasksAction'
+import { store } from '../redux/store'
+import { useSelector } from 'react-redux'
 
 const TaskFormScreen = ({navigation, route}) => {
 
 
     const [editing, setEditing] = useState(false)
     const [ task, setTask ] =  useState ({
+        id: '',
         title: '',
         description: ''
     })
 
+    const taskCount = useSelector(state => state.tasksReducer.contador)
+    useEffect(() => {
+        console.log("contador", taskCount)
+      handleChange('id', taskCount+1)
+    
+    }, [taskCount])
+    
     const handleChange = (name, value) => setTask({ ...task, [name]: value})
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         try {
             if (!editing){
-                await saveTask(task)
+                console.log("submit")
+                store.dispatch(addNewTask(task))
             }
             else {
-                //console.log(route.params.id, task)
-                await updateTask(route.params.id, task)
+                //store.dispatch(deleteTask(task.id))
+                store.dispatch(updateTask(task))
             }
             navigation.navigate("HomeScreen")
         } catch (error) {
@@ -30,44 +41,45 @@ const TaskFormScreen = ({navigation, route}) => {
         }  
     }
 
+    const selectedTask = useSelector(state => state.tasksReducer.task)
+
     useEffect(() => {
         if(route.params && route.params.id){
             setEditing(true)
             navigation.setOptions({
-                headerTitle: 'Updating a Task'
+                headerTitle: 'Editar Tarea'
             });
-            (async () => {
-                const task = await getTask(route.params.id)
-                setTask({title: task.title, description:task.description})
-            })();
+            setTask(selectedTask)
         }
     }, [])
 
     return (
         <Layout>
             <TextInput 
-                placeholder="Write a title"
+                placeholder="Titulo"
                 placeholderTextColor= "#546574"
                 style = {styles.input} 
                 onChangeText = { (text) => handleChange('title', text)}
                 value = { task.title }
+                maxLength = {40}
             />
             <TextInput 
-                placeholder="Write a description" 
+                placeholder="Descripcion" 
                 placeholderTextColor= "#546574"
                 style = {styles.input} 
                 onChangeText = { (text) => handleChange('description', text) }
                 value = { task.description }
+                maxLength = {144}
             />
 
             {
                 !editing ?  (
                     <TouchableOpacity style = {styles.buttonSave} onPress={handleSubmit}>
-                        <Text style= {styles.buttonText}>Save Task</Text>
+                        <Text style= {styles.buttonText}>Guardar Tarea</Text>
                     </TouchableOpacity>
                 ) : (
                     <TouchableOpacity style = {styles.buttonUpdate} onPress={handleSubmit}>
-                        <Text style= {styles.buttonText}>Update Task</Text>
+                        <Text style= {styles.buttonText}>Editar Tarea</Text>
                     </TouchableOpacity>
                 )
             }
@@ -79,31 +91,34 @@ const TaskFormScreen = ({navigation, route}) => {
 const styles = StyleSheet.create({
     input: {
         width: "90%",
-        fontSize: 14,
+        height: 50,
+        fontSize: 18,
         marginBottom: 7,
         borderWidth: 1,
         borderColor: "#10ac84",
-        height: 35,
         color: "#ffffff",
         textAlign: "center",
         borderRadius: 5,
-        padding: 4
+        padding: 4,
+        marginTop: 20
     },
     buttonSave: {
-        paddingTop: 10,
-        paddingBottom: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
         borderRadius: 5,
         marginBottom: 3,
         backgroundColor: "#10ac84",
         width: "90%",
+        marginTop: 20
     },
     buttonText: {
         color: "#ffffff",
-        textAlign: "center"
+        textAlign: "center",
+        fontSize: 18
     },
     buttonUpdate: {
-        paddingTop: 10,
-        paddingBottom: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
         borderRadius: 5,
         marginBottom: 3,
         backgroundColor: "#e58e26",
